@@ -1,0 +1,219 @@
+<template>
+  <div class="page">
+    <div class="title-container">
+      <text class="title-text time">{{ time }}</text>
+      <marquee class="title-text app-name" scrollamount="30" loop="-1">YOUR RESULT</marquee>
+    </div>
+    
+    <div class="content">
+      <div class="card result-card">
+        <text class="label">BMI</text>
+        <text class="result-value">{{ bmi.toFixed(1) }}</text>
+        <text class="result-category" style="color: {{ categoryColor }};">{{ category }}</text>
+      </div>
+
+      <div class="card info-card">
+        <text class="info-label">Normal BMI range:</text>
+        <text class="info-text">18.5 - 24.9</text>
+      </div>
+
+      <input type="button" class="button" value="Re-calculate" onclick="goToMainPage" />
+
+      <text class="label"> </text>
+      <text class="label"> </text>
+    </div>
+  </div>
+</template>
+
+<script>
+  import router from '@system.router'
+
+  export default {
+    data: {
+      time: '00:00',
+      height: 0,
+      weight: 0,
+      gender: 'male',
+      bmi: 0,
+      category: '',
+      categoryColor: '#b0b0b0'
+    },
+    
+    onInit() {
+      this.updateTime();
+      setInterval(this.updateTime, 60000); 
+    },
+
+    onReady() {
+      if (this.height > 0 && this.weight > 0) {
+        this.calculateBmi();
+      }
+    },
+    
+    updateTime() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      this.time = `${hours}:${minutes}`;
+    },
+    
+    calculateBmi() {
+      const heightInMeters = this.height / 100;
+      this.bmi = this.weight / (heightInMeters * heightInMeters);
+      this.getCategory(); 
+    },
+
+    getCategory() {
+      if (this.gender === 'female') {
+        if (this.bmi < 18.0) {
+          this.category = 'Underweight';
+          this.categoryColor = '#f0c242';
+        } else if (this.bmi >= 18.0 && this.bmi <= 24.5) {
+          this.category = 'Normal weight';
+          this.categoryColor = '#1d7e5d';
+        } else if (this.bmi > 24.5 && this.bmi <= 29.5) {
+          this.category = 'Overweight';
+          this.categoryColor = '#f0a142';
+        } else {
+          this.category = 'Obesity';
+          this.categoryColor = '#e74c3c';
+        }
+      } else {
+        if (this.bmi < 18.5) {
+          this.category = 'Underweight';
+          this.categoryColor = '#f0c242';
+        } else if (this.bmi >= 18.5 && this.bmi <= 24.9) {
+          this.category = 'Normal weight';
+          this.categoryColor = '#1d7e5d';
+        } else if (this.bmi > 24.9 && this.bmi <= 29.9) {
+          this.category = 'Overweight';
+          this.categoryColor = '#f0a142';
+        } else {
+          this.category = 'Obesity';
+          this.categoryColor = '#e74c3c';
+        }
+      }
+    },
+    
+    goToMainPage() {
+      router.back();
+    }
+  }
+</script>
+
+<style>
+  .page {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #121212;
+  }
+
+  .title-container {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 20px;
+    margin-bottom: 25px;
+  }
+
+  .title-text {
+    font-family: 'SberSansDisplay';
+    color: #f0f0f0;
+    font-weight: 500;
+  }
+  
+  .time {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #b0b0b0;
+  }
+
+  .app-name {
+    width: 100%;
+    text-align: center;
+    font-size: 17px;
+  }
+  
+  .content {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 16px;
+    flex-grow: 1;
+    justify-content: center;
+  }
+  
+  .card {
+    background-color: #1e1e1e;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .label {
+    font-family: 'SberSansText';
+    font-size: 16px;
+    color: #b0b0b0;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .button {
+    margin-top: 20px;
+    width: 90%;
+    height: 40px;
+    font-family: 'SberSansText';
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #1d7e5d;
+    border-radius: 12px;
+    border-color: transparent;
+  }
+  
+  .result-card {
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+  
+  .result-value {
+    font-size: 50px;
+    font-weight: 600;
+    color: #f0f0f0;
+    margin-bottom: 15px;
+  }
+  
+  .result-category {
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .info-card {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+
+  .info-label {
+    font-family: 'SberSansText';
+    font-size: 14px;
+    color: #b0b0b0;
+    text-align: center;
+    margin-bottom: 5px;
+  }
+
+  .info-text {
+    font-family: 'SberSansText';
+    font-size: 16px;
+    color: #b0b0b0;
+    text-align: center;
+  }
+</style>

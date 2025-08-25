@@ -1,0 +1,230 @@
+<template>
+  <div class="page">
+    <div class="title-container">
+      <text class="title-text time">{{ time }}</text>
+      <marquee class="title-text app-name" scrollamount="30" loop="-1">BMI CALCULATOR</marquee>
+    </div>
+
+    <div class="content">
+      <div class="card gender-card">
+        <text class="label">GENDER</text>
+        <div class="radio-group">
+          <div class="radio-option">
+            <text class="radio-label">Male</text>
+            <input class="radio" type="radio" name="gender" value="male" checked="{{ selectedGender === 'male' }}" onchange="onGenderChange" />
+          </div>
+          <div class="radio-option">
+            <text class="radio-label">Female</text>
+            <input class="radio" type="radio" name="gender" value="female" checked="{{ selectedGender === 'female' }}" onchange="onGenderChange" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <text class="label">HEIGHT (cm)</text>
+        <picker class="picker" type="text" range="{{ heightRange }}" onchange="onHeightChange"></picker>
+      </div>
+
+      <div class="card">
+        <text class="label">WEIGHT (kg)</text>
+        <picker class="picker" type="text" range="{{ weightRange }}" onchange="onWeightChange"></picker>
+      </div>
+      
+      <input type="button" class="button" value="Next" onclick="goToResultPage" />
+      <input type="button" class="button" value="About" onclick="goToAboutPage" />
+
+      <text class="label"></text>
+      <text class="label"></text>
+    </div>
+  </div>
+</template>
+
+<script>
+  import router from '@system.router'
+
+  export default {
+    data: {
+      time: '00:00',
+      height: 175,
+      weight: 70,
+      selectedGender: 'male',
+      heightRange: [],
+      weightRange: []
+    },
+    
+    onInit() {
+      this.updateTime();
+      setInterval(this.updateTime, 60000);
+      this.populateRanges();
+    },
+
+    populateRanges() {
+      for (let i = 50; i <= 250; i++) {
+        this.heightRange.push(i.toString());
+      }
+      for (let i = 10; i <= 250; i++) {
+        this.weightRange.push(i.toString());
+      }
+    },
+
+    updateTime() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      this.time = `${hours}:${minutes}`;
+    },
+
+    onGenderChange(e) {
+      this.selectedGender = e.value;
+    },
+    
+    onAgeChange(e) {
+      this.age = parseInt(this.ageRange[e.newSelected]);
+    },
+    
+    onHeightChange(e) {
+      this.height = parseInt(this.heightRange[e.newSelected]);
+    },
+    
+    onWeightChange(e) {
+      this.weight = parseInt(this.weightRange[e.newSelected]);
+    },
+    
+    goToResultPage() {
+      router.push({
+        uri: 'pages/result',
+        params: {
+          height: this.height,
+          weight: this.weight,
+          gender: this.selectedGender
+        }
+      });
+    },
+
+    goToAboutPage() {
+      router.push({
+        uri: 'pages/about',
+      });
+    }
+
+  }
+</script>
+
+<style>
+  .page {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #121212; 
+  }
+
+  .title-container {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 20px;
+    margin-bottom: 25px;
+  }
+
+  .title-text {
+    font-family: 'SberSansDisplay';
+    color: #f0f0f0;
+    font-weight: 500;
+  }
+  
+  .time {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #b0b0b0; 
+  }
+
+  .app-name {
+    width: 100%;
+    text-align: center;
+    font-size: 17px;
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 16px;
+    flex-grow: 1;
+    justify-content: center;
+  }
+  
+  .card {
+    background-color: #1e1e1e;
+    border-radius: 20px; 
+    padding: 20px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .label {
+    font-family: 'SberSansText';
+    font-size: 16px;
+    color: #b0b0b0;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .picker {
+    width: 120px;
+    height: 120px;
+    margin: 0;
+    background-color: #161616;
+    selected-color: #1d7e5d; 
+    color: #f0f0f0;
+    font-size: 25px;
+    selected-font-size: 30px;
+    border-radius: 10px;
+  }
+  
+  .button {
+    margin-top: 20px;
+    width: 90%;
+    height: 40px;
+    font-family: 'SberSansText';
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #1d7e5d; 
+    border-radius: 12px;
+    border-color: transparent;
+  }
+
+  .gender-card {
+    padding-bottom: 10px;
+  }
+
+  .radio-group {
+    flex-direction: column; 
+    justify-content: center;
+    align-items: left;
+    width: 100%;
+  }
+
+  .radio-option {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px; 
+  }
+
+  .radio-label {
+    font-family: 'SberSansText';
+    font-size: 18px;
+    color: #f0f0f0;
+    margin-right: 10px;
+  }
+
+  .radio {
+    width: 25px;
+    height: 25px;
+    border-color: #ffffff;
+    border-width: 2px;
+    background-color: transparent;
+  }
+</style>
